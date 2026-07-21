@@ -36,6 +36,9 @@ export default function PendingOrders() {
                 console.warn("Payment API connection failed (offline mode):", err);
             });
 
+            // Update local status to Paid & Preparing
+            targetOrder.status = 'Paid & Preparing';
+
             // Save updated pending list
             const updatedPending = pending.map(order => order.id === orderId ? targetOrder : order);
             setOrders(updatedPending);
