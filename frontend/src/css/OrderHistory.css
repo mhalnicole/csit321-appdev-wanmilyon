@@ -1,0 +1,276 @@
+.history-container {
+    padding: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #333;
+}
+
+.history-header {
+    margin-bottom: 30px;
+}
+
+.history-header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0 0 5px 0;
+}
+
+.history-header p {
+    margin: 0;
+    color: #666;
+}
+
+.history-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.history-empty-state p {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Table styling matching mockup */
+.history-table-wrapper {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+}
+
+.history-table th {
+    background-color: #f5821f;
+    color: white;
+    text-align: left;
+    padding: 14px 20px;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.history-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #f2f2f2;
+    color: #333;
+    font-weight: 500;
+}
+
+.history-table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+.history-order-id-col {
+    font-weight: 800;
+    color: #1a1a1a;
+}
+
+.history-amount-col {
+    font-weight: 700;
+}
+
+/* Completed status badge */
+.history-status-badge {
+    background-color: #c2f0d5;
+    color: #198754;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Action button matching mockup */
+.history-view-btn {
+    background-color: #ffd8bf;
+    color: #f5821f;
+    border: none;
+    padding: 6px 16px;
+    font-weight: 700;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.history-view-btn:hover {
+    background-color: #f5821f;
+    color: white;
+}
+
+/* Receipt Modal Styles */
+.history-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.history-modal-card {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: scaleIn 0.25s ease-out;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.history-modal-header {
+    background-color: #f5821f;
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-modal-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.history-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.history-receipt-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.receipt-header-details p {
+    margin: 0 0 6px 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.receipt-header-details p strong {
+    color: #1a1a1a;
+}
+
+.receipt-paid-tag {
+    background-color: #dcfce7;
+    color: #15803d;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 0.8rem;
+}
+
+.receipt-divider {
+    border-top: 2px dashed #ddd;
+    margin: 5px 0;
+}
+
+.receipt-items-list h3,
+.receipt-notes-section h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.05rem;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.receipt-item-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.receipt-item-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.receipt-item-qty {
+    font-weight: 700;
+    color: #f5821f;
+}
+
+.receipt-item-name {
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+.receipt-item-allergens {
+    font-size: 0.8rem;
+    color: #d9534f;
+}
+
+.receipt-item-price {
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.receipt-notes-section ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.92rem;
+    color: #555;
+}
+
+.receipt-notes-section li {
+    margin-bottom: 4px;
+}
+
+.receipt-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #f5821f;
+}
+
+/* Authentic verified stamp style */
+.receipt-footer-stamp {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.stamp-border {
+    border: 3px double #15803d;
+    border-radius: 6px;
+    color: #15803d;
+    padding: 6px 16px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-align: center;
+    letter-spacing: 1px;
+    display: flex;
+    flex-direction: column;
+    transform: rotate(-3deg);
+    opacity: 0.85;
+}

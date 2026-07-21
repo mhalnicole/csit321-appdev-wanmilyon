@@ -1,0 +1,211 @@
+.special-instructions-container {
+    padding: 40px;
+    display: flex;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.special-instructions-left {
+    flex: 2 1 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+.special-instructions-title {
+    font-size: 42px;
+    font-weight: 800;
+    color: #111111;
+    margin: 0 0 8px 0;
+}
+
+.special-instructions-subtitle {
+    font-size: 16px;
+    color: #666666;
+    margin: 0 0 35px 0;
+}
+
+.special-instructions-section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222222;
+    margin: 0 0 15px 0;
+}
+
+.special-instructions-section-title-spaced {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222222;
+    margin: 35px 0 5px 0;
+}
+
+.special-instructions-hint {
+    font-size: 14px;
+    color: #666666;
+    margin: 0 0 18px 0;
+}
+
+.special-instructions-textarea {
+    width: 100%;
+    background-color: #f2f2f2;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 18px;
+    font-size: 16px;
+    resize: none;
+    outline: none;
+    color: #333333;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    font-family: inherit;
+}
+
+.special-instructions-textarea:focus {
+    border-color: #ffa366;
+    background-color: #ffffff;
+}
+
+.special-instructions-allergen-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 400px;
+}
+
+.special-allergen-btn {
+    background-color: #ececec;
+    color: #555555;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: none;
+}
+
+.special-allergen-btn.selected {
+    background-color: #ffa366;
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(255, 163, 102, 0.25);
+}
+
+.special-allergen-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #b0b0b0;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.special-allergen-icon.selected {
+    background-color: #ffffff;
+    color: #ffa366;
+}
+
+.special-instructions-right {
+    flex: 1 1 320px;
+    display: flex;
+    flex-direction: column;
+}
+
+.special-instructions-summary-card {
+    background-color: #f2f2f2;
+    border-radius: 16px;
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.special-instructions-summary-heading {
+    font-size: 24px;
+    font-weight: 800;
+    color: #111111;
+    margin: 0 0 10px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #222222;
+}
+
+.special-instructions-summary-item {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.special-instructions-summary-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.special-instructions-summary-item-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: #222222;
+}
+
+.special-instructions-summary-item-price {
+    font-size: 18px;
+    font-weight: 800;
+    color: #f5821f;
+}
+
+.special-instructions-summary-item-qty {
+    font-size: 14px;
+    color: #888888;
+    font-weight: bold;
+}
+
+.special-instructions-total-row {
+    border-top: 1px solid #dddddd;
+    padding-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.special-instructions-total-label {
+    font-size: 18px;
+    font-weight: 800;
+    color: #111111;
+}
+
+.special-instructions-total-price {
+    font-size: 20px;
+    font-weight: 800;
+    color: #f5821f;
+}
+
+.special-instructions-confirm-btn {
+    width: 100%;
+    background-color: #f5821f;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(245, 130, 31, 0.35);
+}
+
+.special-instructions-confirm-btn:hover {
+    background-color: #e07216;
+    transform: translateY(-1px);
+}

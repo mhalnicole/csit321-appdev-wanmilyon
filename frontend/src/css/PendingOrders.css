@@ -1,0 +1,206 @@
+.pending-orders-container {
+    padding: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #333;
+}
+
+.pending-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 30px;
+}
+
+.pending-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.pending-empty-state p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.pending-order-btn {
+    background-color: #f5821f;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(245, 130, 31, 0.25);
+    transition: transform 0.2s;
+}
+
+.pending-order-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* pending List */
+.pending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px;
+}
+
+.pending-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border-left: 6px solid #f5821f;
+}
+
+.pending-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 12px;
+}
+
+.pending-order-id {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #1a1a1a;
+    margin-right: 10px;
+}
+
+.pending-order-date {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.pending-status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.pending-status-badge.pending-payment {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.pending-status-badge.paid-&-preparing {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+/* Items section */
+.pending-items-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pending-item-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+}
+
+.pending-item-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pending-item-qty {
+    font-weight: 700;
+    color: #f5821f;
+}
+
+.pending-item-name {
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.pending-item-allergens {
+    font-size: 0.85rem;
+    color: #d9534f;
+}
+
+.pending-item-price {
+    font-weight: 600;
+    color: #444;
+}
+
+/* Notes section */
+.pending-notes-section {
+    background: #faf4f0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.pending-notes-section strong {
+    color: #7a5a4f;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.pending-notes-section ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.pending-notes-section li {
+    margin-bottom: 2px;
+    color: #555;
+}
+
+/* Card Footer */
+.pending-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+    margin-top: 5px;
+}
+
+.pending-total {
+    display: flex;
+    flex-direction: column;
+}
+
+.pending-total span:first-child {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.pending-total-amount {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f5821f;
+}
+
+.pending-pay-btn {
+    background-color: #15803d;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(21, 128, 61, 0.2);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.pending-pay-btn:hover {
+    transform: translateY(-1px);
+    background-color: #166534;
+}
