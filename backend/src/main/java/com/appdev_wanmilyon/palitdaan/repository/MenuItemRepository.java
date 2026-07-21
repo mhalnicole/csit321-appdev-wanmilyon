@@ -1,4 +1,4 @@
-﻿package com.appdev_wanmilyon.palitdaan.repository;
+ackage com.appdev_wanmilyon.palitdaan.repository;
 
 import com.appdev_wanmilyon.palitdaan.entity.MenuItem;
 import org.springframework.data.jpa.repository.JpaRepository;
