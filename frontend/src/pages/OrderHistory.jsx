@@ -6,17 +6,19 @@ export default function OrderHistory() {
     const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
-        const history = JSON.parse(localStorage.getItem('order_history') || '[]');
-        setOrders(history);
+        fetch('http://localhost:8080/orders/user/1')
+            .then(res => res.json())
+            .then(data => {
+                // Sort by ID descending so latest orders show first
+                const sorted = data.sort((a, b) => b.id - a.id);
+                setOrders(sorted);
+            })
+            .catch(err => {
+                console.warn("Failed to fetch order history from backend:", err);
+                const history = JSON.parse(localStorage.getItem('order_history') || '[]');
+                setOrders(history);
+            });
     }, []);
-
-    const formatFoodNames = (orderItems) => {
-        if (!orderItems || orderItems.length === 0) return '';
-        if (orderItems.length === 1) return orderItems[0].food.name;
-        
-        // Show first item + count of other items
-        return `${orderItems[0].food.name} + ${orderItems.length - 1} other${orderItems.length > 2 ? 's' : ''}`;
-    };
 
     return (
         <main className="history-container">
@@ -45,12 +47,14 @@ export default function OrderHistory() {
                         <tbody>
                             {orders.map((order) => (
                                 <tr key={order.id}>
-                                    <td className="history-order-id-col">{order.id}</td>
-                                    <td>{formatFoodNames(order.items)}</td>
-                                    <td>{order.date.split(' ')[0]}</td> {/* Only show date part */}
-                                    <td className="history-amount-col">₱{order.total.toFixed(2)}</td>
+                                    <td className="history-order-id-col">#{order.id}</td>
+                                    <td>{order.itemName}</td>
+                                    <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
+                                    <td className="history-amount-col">₱{order.price.toFixed(2)}</td>
                                     <td>
-                                        <span className="history-status-badge">Completed</span>
+                                        <span className={`history-status-badge ${order.status.toLowerCase()}`}>
+                                            {order.status}
+                                        </span>
                                     </td>
                                     <td style={{ textAlign: 'center' }}>
                                         <button className="history-view-btn" onClick={() => setSelectedOrder(order)}>
@@ -75,41 +79,29 @@ export default function OrderHistory() {
 
                         <div className="history-receipt-body">
                             <div className="receipt-header-details">
-                                <p><strong>Order ID:</strong> {selectedOrder.id}</p>
-                                <p><strong>Date & Time:</strong> {selectedOrder.date}</p>
-                                <p><strong>Status:</strong> <span className="receipt-paid-tag">PAID</span></p>
+                                <p><strong>Order ID:</strong> #{selectedOrder.id}</p>
+                                <p><strong>Date & Time:</strong> {selectedOrder.createdAt ? new Date(selectedOrder.createdAt).toLocaleString() : 'N/A'}</p>
+                                <p><strong>Status:</strong> <span className="receipt-paid-tag">{selectedOrder.status}</span></p>
                             </div>
 
                             <div className="receipt-divider"></div>
 
                             <div className="receipt-items-list">
                                 <h3>Items Ordered</h3>
-                                {selectedOrder.items.map((item, index) => (
-                                    <div key={index} className="receipt-item-row">
-                                        <div className="receipt-item-left">
-                                            <span className="receipt-item-qty">{item.quantity}x</span>
-                                            <span className="receipt-item-name">{item.food.name}</span>
-                                            {item.allergens.length > 0 && (
-                                                <span className="receipt-item-allergens">({item.allergens.join(', ')})</span>
-                                            )}
-                                        </div>
-                                        <span className="receipt-item-price">₱{(item.food.price * item.quantity).toFixed(2)}</span>
+                                <div className="receipt-item-row">
+                                    <div className="receipt-item-left">
+                                        <span className="receipt-item-name">{selectedOrder.itemName}</span>
                                     </div>
-                                ))}
+                                    <span className="receipt-item-price">₱{selectedOrder.price.toFixed(2)}</span>
+                                </div>
                             </div>
 
-                            {selectedOrder.items.some(item => item.comment) && (
+                            {selectedOrder.specialInstructions && (
                                 <>
                                     <div className="receipt-divider"></div>
                                     <div className="receipt-notes-section">
                                         <h3>Special Requests</h3>
-                                        <ul>
-                                            {selectedOrder.items.filter(item => item.comment).map((item, index) => (
-                                                <li key={index}>
-                                                    <strong>{item.food.name}:</strong> "{item.comment}"
-                                                </li>
-                                            ))}
-                                        </ul>
+                                        <p>"{selectedOrder.specialInstructions}"</p>
                                     </div>
                                 </>
                             )}
@@ -117,8 +109,8 @@ export default function OrderHistory() {
                             <div className="receipt-divider"></div>
 
                             <div className="receipt-total-row">
-                                <span>TOTAL PAID:</span>
-                                <span>₱{selectedOrder.total.toFixed(2)}</span>
+                                <span>TOTAL AMOUNT:</span>
+                                <span>₱{selectedOrder.price.toFixed(2)}</span>
                             </div>
 
                             <div className="receipt-footer-stamp">

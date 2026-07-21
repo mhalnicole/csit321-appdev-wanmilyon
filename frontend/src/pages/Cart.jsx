@@ -49,6 +49,7 @@ export default function Cart() {
 
         // Status is PENDING. If GCASH, the payment API will automatically advance it to Paid.
         const orderData = {
+            user: { id: 1 },
             itemName: orderItemNames,
             price: calculateTotal(),
             status: 'PENDING',
