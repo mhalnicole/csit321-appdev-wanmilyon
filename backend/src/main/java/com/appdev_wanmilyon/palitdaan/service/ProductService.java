@@ -1,4 +1,4 @@
-ackage com.appdev_wanmilyon.palitdaan.service;
+package com.appdev_wanmilyon.palitdaan.service;
 
 import com.appdev_wanmilyon.palitdaan.entity.Product;
 import com.appdev_wanmilyon.palitdaan.repository.ProductRepository;

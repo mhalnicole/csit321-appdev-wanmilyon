@@ -1,4 +1,4 @@
-ackage com.appdev_wanmilyon.palitdaan.service;
+package com.appdev_wanmilyon.palitdaan.service;
 
 import com.appdev_wanmilyon.palitdaan.entity.Order;
 import com.appdev_wanmilyon.palitdaan.entity.Payment;
@@ -42,4 +42,3 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 }
-

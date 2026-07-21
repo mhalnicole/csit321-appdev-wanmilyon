@@ -1,4 +1,4 @@
-ackage com.appdev_wanmilyon.palitdaan.service;
+package com.appdev_wanmilyon.palitdaan.service;
 
 import com.appdev_wanmilyon.palitdaan.entity.MenuItem;
 import com.appdev_wanmilyon.palitdaan.repository.MenuItemRepository;
@@ -23,4 +23,3 @@ public class MenuItemService {
         return repository.save(menuItem);
     }
 }
-

@@ -1,4 +1,4 @@
-ackage com.appdev_wanmilyon.palitdaan.entity;
+package com.appdev_wanmilyon.palitdaan.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -89,4 +89,3 @@ public class Order {
         this.createdAt = createdAt;
     }
 }
-

@@ -1,4 +1,4 @@
-ackage com.appdev_wanmilyon.palitdaan.service;
+package com.appdev_wanmilyon.palitdaan.service;
 
 import com.appdev_wanmilyon.palitdaan.entity.User;
 import com.appdev_wanmilyon.palitdaan.repository.UserRepository;
@@ -33,4 +33,3 @@ public class AuthService {
         return Optional.empty();
     }
 }
-

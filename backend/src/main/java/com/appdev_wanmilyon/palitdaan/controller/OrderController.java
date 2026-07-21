@@ -1,4 +1,4 @@
-ackage com.appdev_wanmilyon.palitdaan.controller;
+package com.appdev_wanmilyon.palitdaan.controller;
 
 import com.appdev_wanmilyon.palitdaan.entity.Order;
 import com.appdev_wanmilyon.palitdaan.service.OrderService;
@@ -39,4 +39,3 @@ public class OrderController {
         }
     }
 }
-

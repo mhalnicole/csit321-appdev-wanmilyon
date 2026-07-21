@@ -1,4 +1,4 @@
-ackage com.appdev_wanmilyon.palitdaan.controller;
+package com.appdev_wanmilyon.palitdaan.controller;
 
 import com.appdev_wanmilyon.palitdaan.entity.Payment;
 import com.appdev_wanmilyon.palitdaan.service.PaymentService;
@@ -29,4 +29,3 @@ public class PaymentController {
         }
     }
 }
-

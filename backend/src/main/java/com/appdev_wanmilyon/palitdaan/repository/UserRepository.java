@@ -1,4 +1,4 @@
-ackage com.appdev_wanmilyon.palitdaan.repository;
+package com.appdev_wanmilyon.palitdaan.repository;
 
 import com.appdev_wanmilyon.palitdaan.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +10,3 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByStudentId(String studentId);
 }
-

@@ -1,4 +1,4 @@
-ackage com.appdev_wanmilyon.palitdaan.entity;
+package com.appdev_wanmilyon.palitdaan.entity;
 
 import jakarta.persistence.*;
 
@@ -76,4 +76,3 @@ public class MenuItem {
         this.description = description;
     }
 }
-
