@@ -10,6 +10,10 @@
   box-sizing: border-box;
 }
 
+.navbar-button:hover {
+  transform: scale(1.2);
+}
+
 .navbar-left {
   flex: 1;
   display: flex;
@@ -53,4 +57,29 @@
 .navbar-link.active {
   border-color: white;
   background-color: rgba(255, 255, 255, 0.15);
+}
+
+.menu-toggle-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  box-sizing: border-box;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+}
+
+.menu-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: scale(1.08);
+}
+
+.menu-toggle-btn:active {
+  transform: scale(0.95);
 }

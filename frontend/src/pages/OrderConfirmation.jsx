@@ -7,7 +7,7 @@ export default function OrderConfirmation() {
     const [order, setOrder] = useState(null);
 
     useEffect(() => {
-        const latestOrder = JSON.parse(localStorage.getItem('latest_order'));
+        const latestOrder = JSON.parse(sessionStorage.getItem('latest_order'));
         setOrder(latestOrder);
     }, []);
 
@@ -58,28 +58,7 @@ export default function OrderConfirmation() {
                     </div>
                 </div>
 
-                {/* Visual Status Tracker Bar */}
-                <div className="status-tracker-container">
-                    <div className={`tracker-step active`}>
-                        <div className="step-circle">1</div>
-                        <span className="step-label">Placed</span>
-                    </div>
-                    <div className={`tracker-line ${['PAID', 'PAID & PREPARING', 'COMPLETED'].includes(order.status?.toUpperCase()) ? 'active' : ''}`}></div>
-                    <div className={`tracker-step ${['PAID', 'PAID & PREPARING', 'COMPLETED'].includes(order.status?.toUpperCase()) ? 'active' : ''}`}>
-                        <div className="step-circle">2</div>
-                        <span className="step-label">Paid</span>
-                    </div>
-                    <div className={`tracker-line ${['PAID & PREPARING', 'COMPLETED'].includes(order.status?.toUpperCase()) ? 'active' : ''}`}></div>
-                    <div className={`tracker-step ${['PAID & PREPARING', 'COMPLETED'].includes(order.status?.toUpperCase()) ? 'active' : ''}`}>
-                        <div className="step-circle">3</div>
-                        <span className="step-label">Preparing</span>
-                    </div>
-                    <div className={`tracker-line ${order.status?.toUpperCase() === 'COMPLETED' ? 'active' : ''}`}></div>
-                    <div className={`tracker-step ${order.status?.toUpperCase() === 'COMPLETED' ? 'active' : ''}`}>
-                        <div className="step-circle">4</div>
-                        <span className="step-label">Ready</span>
-                    </div>
-                </div>
+
 
                 {/* Items List */}
                 <div className="receipt-items-section">

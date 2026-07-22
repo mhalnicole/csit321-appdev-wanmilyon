@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getCurrentUser } from '../utils/auth';
 
 const initialProfile = {
   name: 'Juan Dela Cruz',
@@ -12,7 +13,9 @@ const initialProfile = {
 
 export default function ProfileSettings() {
   const getInitialState = () => {
-    const saved = localStorage.getItem('user_profile');
+    const currentUser = getCurrentUser();
+    const userId = currentUser ? currentUser.id : 1;
+    const saved = localStorage.getItem(`user_profile_${userId}`);
     return saved ? JSON.parse(saved) : initialProfile;
   };
 
@@ -21,21 +24,34 @@ export default function ProfileSettings() {
   const [savedMessage, setSavedMessage] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:8080/users/1')
+    const currentUser = getCurrentUser();
+    const userId = currentUser ? currentUser.id : 1;
+    const localKey = `user_profile_${userId}`;
+    const savedLocal = localStorage.getItem(localKey);
+    const baseProfile = savedLocal ? JSON.parse(savedLocal) : initialProfile;
+
+    fetch(`http://localhost:8080/users/${userId}`)
       .then(res => res.json())
       .then(user => {
         if (user && user.fullName) {
           const updated = {
-            ...savedProfile,
-            name: user.fullName || savedProfile.name,
-            email: user.email || savedProfile.email,
+            ...baseProfile,
+            name: user.fullName || baseProfile.name,
+            email: user.email || baseProfile.email,
           };
-          setSavedProfile(updated);
           setProfile(updated);
-          localStorage.setItem('user_profile', JSON.stringify(updated));
+          setSavedProfile(updated);
+          localStorage.setItem(localKey, JSON.stringify(updated));
+        } else {
+          setProfile(baseProfile);
+          setSavedProfile(baseProfile);
         }
       })
-      .catch(err => console.warn("Using offline user profile:", err));
+      .catch(err => {
+        console.warn("Using offline user profile:", err);
+        setProfile(baseProfile);
+        setSavedProfile(baseProfile);
+      });
   }, []);
 
   // Detect whether form has unsaved modifications
@@ -47,12 +63,16 @@ export default function ProfileSettings() {
 
   const handleSave = () => {
     if (!hasChanges) return;
+    const currentUser = getCurrentUser();
+    const userId = currentUser ? currentUser.id : 1;
+    const localKey = `user_profile_${userId}`;
+
     // 1. Commit as saved profile
     setSavedProfile(profile);
-    localStorage.setItem('user_profile', JSON.stringify(profile));
+    localStorage.setItem(localKey, JSON.stringify(profile));
 
     // 2. Sync to Backend API
-    fetch('http://localhost:8080/users/1', {
+    fetch(`http://localhost:8080/users/${userId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -150,7 +170,7 @@ export default function ProfileSettings() {
               <p style={summaryDetailStyle}>{profile.email}</p>
             </div>
 
-            <div style={summaryBlocksStyle}>
+            {/* <div style={summaryBlocksStyle}>
               <div style={summaryBlockStyle}>
                 <span style={summaryBlockTitle}>Member status</span>
                 <span style={summaryBlockValue}>{profile.membership}</span>
@@ -159,7 +179,7 @@ export default function ProfileSettings() {
                 <span style={summaryBlockTitle}>Joined</span>
                 <span style={summaryBlockValue}>{profile.joined}</span>
               </div>
-            </div>
+            </div> */}
 
             <div style={infoListStyle}>
               <div>
@@ -283,7 +303,7 @@ const eyebrowStyle = {
 
 const heroTitleStyle = {
   margin: '2px 0 4px',
-  fontSize: '1.4rem',
+  fontSize: '1.85rem',
   lineHeight: '1.1',
   fontWeight: 800,
   color: '#2b2b2b'
@@ -292,14 +312,14 @@ const heroTitleStyle = {
 const heroCopyStyle = {
   margin: 0,
   maxWidth: '650px',
-  fontSize: '0.82rem',
+  fontSize: '0.95rem',
   color: '#51423a',
   lineHeight: '1.35'
 };
 
 const heroActionsStyle = {
   display: 'flex',
-  gap: '10px',
+  gap: '12px',
   flexWrap: 'wrap'
 };
 
@@ -308,8 +328,8 @@ const primaryButtonStyle = {
   color: '#ffffff',
   border: 'none',
   borderRadius: '999px',
-  padding: '8px 18px',
-  fontSize: '0.88rem',
+  padding: '10px 22px',
+  fontSize: '0.98rem',
   fontWeight: 700,
   cursor: 'pointer',
   boxShadow: '0 4px 12px rgba(255,106,26,0.24)',
@@ -321,8 +341,8 @@ const ghostButtonStyle = {
   color: '#4a3e35',
   border: '1px solid rgba(74,62,53,0.16)',
   borderRadius: '999px',
-  padding: '8px 16px',
-  fontSize: '0.88rem',
+  padding: '10px 20px',
+  fontSize: '0.98rem',
   fontWeight: 700,
   cursor: 'pointer',
   flexShrink: 0
@@ -330,8 +350,8 @@ const ghostButtonStyle = {
 
 const gridStyle = {
   display: 'grid',
-  gridTemplateColumns: '220px 1fr',
-  gap: '12px',
+  gridTemplateColumns: '260px 1fr',
+  gap: '16px',
   flex: 1,
   minHeight: 0,
   overflow: 'hidden'
@@ -339,20 +359,20 @@ const gridStyle = {
 
 const summaryCardStyle = {
   background: '#ffffff',
-  borderRadius: '16px',
-  padding: '14px',
+  borderRadius: '20px',
+  padding: '20px',
   boxShadow: '0 6px 20px rgba(16, 24, 40, 0.05)',
   display: 'flex',
   flexDirection: 'column',
-  gap: '12px',
+  gap: '16px',
   overflowY: 'auto',
   minHeight: 0,
   height: '100%'
 };
 
 const profileBadgeStyle = {
-  width: '54px',
-  height: '54px',
+  width: '68px',
+  height: '68px',
   borderRadius: '50%',
   background: 'linear-gradient(135deg, #ff6a1a 0%, #ffb86c 100%)',
   display: 'grid',
@@ -363,7 +383,7 @@ const profileBadgeStyle = {
 
 const profileInitialStyle = {
   color: '#ffffff',
-  fontSize: '20px',
+  fontSize: '26px',
   fontWeight: 800
 };
 
@@ -372,13 +392,13 @@ const summaryLabelStyle = {
   color: '#8f7562',
   textTransform: 'uppercase',
   letterSpacing: '0.12em',
-  fontSize: '9px',
+  fontSize: '11px',
   fontWeight: 700
 };
 
 const summaryTitleStyle = {
   margin: '0 0 2px',
-  fontSize: '15px',
+  fontSize: '18px',
   fontWeight: 800,
   color: '#1f1d1b'
 };
@@ -386,46 +406,19 @@ const summaryTitleStyle = {
 const summaryDetailStyle = {
   margin: 0,
   color: '#6a5c50',
-  fontSize: '11px',
-  lineHeight: '1.3'
-};
-
-const summaryBlocksStyle = {
-  display: 'grid',
-  gap: '8px'
-};
-
-const summaryBlockStyle = {
-  background: '#f8f1ec',
-  borderRadius: '12px',
-  padding: '8px 10px'
-};
-
-const summaryBlockTitle = {
-  display: 'block',
-  marginBottom: '2px',
-  color: '#7e675a',
-  fontSize: '9px',
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.12em'
-};
-
-const summaryBlockValue = {
-  color: '#2b2420',
   fontSize: '13px',
-  fontWeight: 700
+  lineHeight: '1.3'
 };
 
 const infoListStyle = {
   display: 'grid',
-  gap: '8px'
+  gap: '10px'
 };
 
 const infoLabelStyle = {
   margin: 0,
   color: '#8f7562',
-  fontSize: '9px',
+  fontSize: '11px',
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.12em'
@@ -434,14 +427,14 @@ const infoLabelStyle = {
 const infoTextStyle = {
   margin: '2px 0 0',
   color: '#4d4238',
-  fontSize: '11px',
+  fontSize: '13px',
   lineHeight: '1.3'
 };
 
 const formCardStyle = {
   background: '#ffffff',
-  borderRadius: '16px',
-  padding: '14px 18px',
+  borderRadius: '20px',
+  padding: '20px 24px',
   boxShadow: '0 6px 20px rgba(16, 24, 40, 0.05)',
   display: 'flex',
   flexDirection: 'column',
@@ -452,7 +445,7 @@ const formCardStyle = {
 
 const sectionStyle = {
   display: 'grid',
-  gap: '8px'
+  gap: '12px'
 };
 
 const sectionHeaderStyle = {
@@ -464,14 +457,14 @@ const sectionHeaderStyle = {
 
 const sectionTitleStyle = {
   margin: 0,
-  fontSize: '1.05rem',
+  fontSize: '1.25rem',
   fontWeight: 800,
   color: '#2b2b2b'
 };
 
 const sectionSubtitleStyle = {
   margin: '2px 0 0',
-  fontSize: '11px',
+  fontSize: '13px',
   color: '#6a5c50',
   lineHeight: '1.3'
 };
@@ -479,50 +472,50 @@ const sectionSubtitleStyle = {
 const fieldGridStyle = {
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  gap: '8px'
+  gap: '12px'
 };
 
 const fieldWrapperStyle = {
   display: 'flex',
   flexDirection: 'column',
-  gap: '4px'
+  gap: '6px'
 };
 
 const fieldWrapperStyleFull = {
   gridColumn: '1 / -1',
   display: 'flex',
   flexDirection: 'column',
-  gap: '4px'
+  gap: '6px'
 };
 
 const fieldLabelStyle = {
   margin: 0,
   color: '#4a4037',
-  fontSize: '11px',
+  fontSize: '13px',
   fontWeight: 700
 };
 
 const inputStyle = {
   width: '100%',
-  padding: '8px 10px',
-  borderRadius: '10px',
+  padding: '10px 14px',
+  borderRadius: '12px',
   border: '1px solid #e6d4c5',
   background: '#fcfaf7',
   color: '#3f332d',
-  fontSize: '12px',
+  fontSize: '14px',
   outline: 'none',
   boxSizing: 'border-box'
 };
 
 const textareaStyle = {
   width: '100%',
-  height: '45px',
-  padding: '8px 10px',
-  borderRadius: '10px',
+  height: '60px',
+  padding: '10px 14px',
+  borderRadius: '12px',
   border: '1px solid #e6d4c5',
   background: '#fcfaf7',
   color: '#3f332d',
-  fontSize: '12px',
+  fontSize: '14px',
   outline: 'none',
   boxSizing: 'border-box',
   resize: 'none'
