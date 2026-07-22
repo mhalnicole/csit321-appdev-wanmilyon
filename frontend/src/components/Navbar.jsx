@@ -16,16 +16,7 @@ export default function Navbar({ toggleSidebar }) {
             <div className="navbar-left">
                 <button 
                     onClick={toggleSidebar} 
-                    style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '5px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white'
-                    }}
+                    className="menu-toggle-btn"
                     aria-label="Toggle menu"
                 >
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -39,9 +30,9 @@ export default function Navbar({ toggleSidebar }) {
                 PALIT DAAN
             </div>
             <div className="navbar-links">
-                <Link className={`navbar-link ${isActive('/menu') ? 'active' : ''}`} to="/menu">Menu</Link>
-                <Link className={`navbar-link ${isActive('/orders') ? 'active' : ''}`} to="/orders">Orders</Link>
-                <Link className={`navbar-link ${isActive('/profile') ? 'active' : ''}`} to="/profile">Profile</Link>
+                <Link className={`navbar-link nav-link-animate ${isActive('/menu') ? 'active' : ''}`} to="/menu">Menu</Link>
+                <Link className={`navbar-link nav-link-animate ${isActive('/orders') ? 'active' : ''}`} to="/orders">Orders</Link>
+                <Link className={`navbar-link nav-link-animate ${isActive('/profile') ? 'active' : ''}`} to="/profile">Profile</Link>
             </div>
         </div>
     );

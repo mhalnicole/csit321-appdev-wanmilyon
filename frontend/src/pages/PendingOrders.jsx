@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/PendingOrders.css';
+import { getCurrentUser } from '../utils/auth';
 
 export default function PendingOrders() {
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/orders/user/1')
+        const currentUser = getCurrentUser();
+        const userId = currentUser ? currentUser.id : 1;
+        fetch(`http://localhost:8080/orders/user/${userId}`)
             .then(res => res.json())
             .then(data => {
                 const activeBackendOrders = data
@@ -23,7 +26,7 @@ export default function PendingOrders() {
                     }));
 
                 // Get local storage pending orders and sync with backend
-                const localPending = JSON.parse(localStorage.getItem('pending_orders') || '[]')
+                const localPending = JSON.parse(sessionStorage.getItem('pending_orders') || '[]')
                     .filter(o => o.status !== 'COMPLETED' && o.status !== 'Completed');
 
                 const cleanedLocal = [];
@@ -36,7 +39,7 @@ export default function PendingOrders() {
                 });
 
                 // Update clean local storage
-                localStorage.setItem('pending_orders', JSON.stringify(cleanedLocal));
+                sessionStorage.setItem('pending_orders', JSON.stringify(cleanedLocal));
 
                 const combined = [...activeBackendOrders];
                 cleanedLocal.forEach(local => {
@@ -48,7 +51,7 @@ export default function PendingOrders() {
                 setOrders(combined);
             })
             .catch(err => {
-                const pending = JSON.parse(localStorage.getItem('pending_orders') || '[]')
+                const pending = JSON.parse(sessionStorage.getItem('pending_orders') || '[]')
                     .filter(o => o.status !== 'COMPLETED' && o.status !== 'Completed');
                 setOrders(pending);
             });
@@ -85,9 +88,9 @@ export default function PendingOrders() {
             setOrders(updatedOrders);
 
             // Update local storage
-            const pending = JSON.parse(localStorage.getItem('pending_orders') || '[]');
+            const pending = JSON.parse(sessionStorage.getItem('pending_orders') || '[]');
             const updatedLocal = pending.map(o => (o.id === orderId || o.backendId === rawId) ? { ...o, status: 'Paid & Preparing' } : o);
-            localStorage.setItem('pending_orders', JSON.stringify(updatedLocal));
+            sessionStorage.setItem('pending_orders', JSON.stringify(updatedLocal));
         }
     };
 
@@ -103,19 +106,19 @@ export default function PendingOrders() {
             }).catch(err => console.warn("Backend complete status update failed:", err));
 
             // Move to order_history in local storage
-            const history = JSON.parse(localStorage.getItem('order_history') || '[]');
+            const history = JSON.parse(sessionStorage.getItem('order_history') || '[]');
             const historyOrder = { ...targetOrder, status: 'COMPLETED', completedDate: new Date().toLocaleDateString() };
             history.unshift(historyOrder);
-            localStorage.setItem('order_history', JSON.stringify(history));
+            sessionStorage.setItem('order_history', JSON.stringify(history));
 
             // Remove from active pending orders state
             const updatedOrders = orders.filter(o => o.id !== orderId);
             setOrders(updatedOrders);
 
             // Remove from local storage
-            const pending = JSON.parse(localStorage.getItem('pending_orders') || '[]');
+            const pending = JSON.parse(sessionStorage.getItem('pending_orders') || '[]');
             const updatedLocal = pending.filter(o => o.id !== orderId && o.backendId !== rawId && o.backendId !== targetOrder.backendId);
-            localStorage.setItem('pending_orders', JSON.stringify(updatedLocal));
+            sessionStorage.setItem('pending_orders', JSON.stringify(updatedLocal));
         }
     };
 

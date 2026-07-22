@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import MenuPage from '../pages/MenuPage';
 import SpecialInstructions from '../pages/SpecialInstructions';
 import ProfileSettings from '../pages/ProfileSettings';
@@ -9,14 +9,20 @@ import OrderHistory from '../pages/OrderHistory';
 import OrderConfirmation from '../pages/OrderConfirmation';
 
 export default function MainContent() {
+    const location = useLocation();
+
     return (
-            <div style={{
-                backgroundColor: '#ffffff',
-                flex: 1,
-                padding: '20px',
-                minHeight: 'calc(100vh - 74px)',
-                boxSizing: 'border-box'
-            }}>
+            <div 
+                key={location.pathname}
+                className="slide-up-fade-in"
+                style={{
+                    backgroundColor: '#ffffff',
+                    flex: 1,
+                    padding: '20px',
+                    minHeight: 'calc(100vh - 74px)',
+                    boxSizing: 'border-box'
+                }}
+            >
             <Routes> {/* <Route path='/' element={<Navigate to='/dashboard' replace />} /> */}
                 <Route path='/orders' element={<OrderHistory />} />
                 <Route path="/confirmation" element={<OrderConfirmation />} />

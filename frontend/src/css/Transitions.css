@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* Styles for login/logout and page transitions */
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6));
+  }
+  100% {
+    transform: scale(0.95);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+  }
+}
+
+.pulse-logo {
+  animation: pulse 1.5s infinite ease-in-out;
+  max-width: 250px;
+  height: auto;
+}
+
+@keyframes slideUpFadeIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-up-fade-in {
+  animation: slideUpFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+.fade-out {
+  animation: fadeOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Loading bar animation */
+.loader-bar {
+  width: 200px;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-top: 24px;
+}
+
+.loader-bar-fill {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 80px;
+  background-color: #ffffff;
+  border-radius: 4px;
+  animation: loaderSlide 1.2s infinite ease-in-out;
+}
+
+@keyframes loaderSlide {
+  0% {
+    left: -80px;
+  }
+  50% {
+    width: 120px;
+  }
+  100% {
+    left: 200px;
+  }
+}
+
+/* Navigation link press tactile effect */
+.nav-link-animate {
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), filter 0.15s ease, background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.nav-link-animate:active {
+  transform: scale(0.95) translateY(0) !important;
+}
+
+/* Cart item deletion collapse animation */
+@keyframes itemCollapse {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 200px;
+    padding: 12px;
+    margin-bottom: 0px;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(50px);
+    max-height: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-bottom: -12px; /* Offset the 12px flex gap when collapsing */
+  }
+}
+
+.cart-item-exit {
+  animation: itemCollapse 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+  overflow: hidden;
+}

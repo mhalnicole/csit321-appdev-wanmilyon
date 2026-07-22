@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Cart.css';
+import { getCurrentUser } from '../utils/auth';
 
 export default function Cart() {
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState([]);
     const [paymentMethod, setPaymentMethod] = useState('CASH');
+    const [deletingIds, setDeletingIds] = useState([]);
 
     useEffect(() => {
-        const items = JSON.parse(localStorage.getItem('cart') || '[]');
+        const items = JSON.parse(sessionStorage.getItem('cart') || '[]');
         setCartItems(items);
     }, []);
 
@@ -21,13 +23,18 @@ export default function Cart() {
             return item;
         });
         setCartItems(updated);
-        localStorage.setItem('cart', JSON.stringify(updated));
+        sessionStorage.setItem('cart', JSON.stringify(updated));
     };
 
     const removeItem = (id) => {
-        const updated = cartItems.filter(item => item.id !== id);
-        setCartItems(updated);
-        localStorage.setItem('cart', JSON.stringify(updated));
+        if (deletingIds.includes(id)) return;
+        setDeletingIds(prev => [...prev, id]);
+        setTimeout(() => {
+            const updated = cartItems.filter(item => item.id !== id);
+            setCartItems(updated);
+            sessionStorage.setItem('cart', JSON.stringify(updated));
+            setDeletingIds(prev => prev.filter(deletingId => deletingId !== id));
+        }, 400);
     };
 
     const calculateTotal = () => {
@@ -47,9 +54,12 @@ export default function Cart() {
             return [notes, allergensList].filter(Boolean).join(' | ');
         }).filter(Boolean).join(' ; ');
 
+        const currentUser = getCurrentUser();
+        const userId = currentUser ? currentUser.id : 1;
+
         // Status is PENDING. If GCASH, the payment API will automatically advance it to Paid.
         const orderData = {
-            user: { id: 1 },
+            user: { id: userId },
             itemName: orderItemNames,
             price: calculateTotal(),
             status: 'PENDING',
@@ -69,8 +79,8 @@ export default function Cart() {
         })
         .then(savedOrder => {
             // Keep local storage order count working
-            const nextOrderNumber = parseInt(localStorage.getItem('order_counter') || '0', 10) + 1;
-            localStorage.setItem('order_counter', nextOrderNumber.toString());
+            const nextOrderNumber = parseInt(sessionStorage.getItem('order_counter') || '0', 10) + 1;
+            sessionStorage.setItem('order_counter', nextOrderNumber.toString());
 
             const isGCash = paymentMethod === 'GCASH';
             const localOrder = {
@@ -83,12 +93,12 @@ export default function Cart() {
                 status: isGCash ? 'Paid & Preparing' : 'Pending Payment'
             };
 
-            const pendingOrders = JSON.parse(localStorage.getItem('pending_orders') || '[]');
+            const pendingOrders = JSON.parse(sessionStorage.getItem('pending_orders') || '[]');
             pendingOrders.unshift(localOrder);
-            localStorage.setItem('pending_orders', JSON.stringify(pendingOrders));
+            sessionStorage.setItem('pending_orders', JSON.stringify(pendingOrders));
 
             // Save latest order for the confirmation page
-            localStorage.setItem('latest_order', JSON.stringify(localOrder));
+            sessionStorage.setItem('latest_order', JSON.stringify(localOrder));
 
             // If GCash, trigger the Payments API and Order status update immediately on backend
             if (isGCash) {
@@ -118,7 +128,7 @@ export default function Cart() {
             }
 
             // Clear cart
-            localStorage.removeItem('cart');
+            sessionStorage.removeItem('cart');
             setCartItems([]);
 
             // Redirect to confirmation page
@@ -128,8 +138,8 @@ export default function Cart() {
             console.warn("Using offline cart fallback due to error:", err);
             
             // Fallback: Offline mode (Save to local storage only)
-            const nextOrderNumber = parseInt(localStorage.getItem('order_counter') || '0', 10) + 1;
-            localStorage.setItem('order_counter', nextOrderNumber.toString());
+            const nextOrderNumber = parseInt(sessionStorage.getItem('order_counter') || '0', 10) + 1;
+            sessionStorage.setItem('order_counter', nextOrderNumber.toString());
 
             const localOrder = {
                 id: '#' + nextOrderNumber,
@@ -139,14 +149,14 @@ export default function Cart() {
                 status: 'Pending Payment'
             };
 
-            const pendingOrders = JSON.parse(localStorage.getItem('pending_orders') || '[]');
+            const pendingOrders = JSON.parse(sessionStorage.getItem('pending_orders') || '[]');
             pendingOrders.unshift(localOrder);
-            localStorage.setItem('pending_orders', JSON.stringify(pendingOrders));
+            sessionStorage.setItem('pending_orders', JSON.stringify(pendingOrders));
 
             // Save latest order for the confirmation page
-            localStorage.setItem('latest_order', JSON.stringify(localOrder));
+            sessionStorage.setItem('latest_order', JSON.stringify(localOrder));
 
-            localStorage.removeItem('cart');
+            sessionStorage.removeItem('cart');
             setCartItems([]);
             navigate('/confirmation');
         });
@@ -167,39 +177,42 @@ export default function Cart() {
                 <div className="cart-layout">
                     {/* Items List */}
                     <div className="cart-items-list">
-                        {cartItems.map((item) => (
-                            <div key={item.id} className="cart-item-card">
-                                <img src={item.food.image} alt={item.food.name} className="cart-item-img" />
-                                <div className="cart-item-details">
-                                    <h3>{item.food.name}</h3>
-                                    <p className="cart-item-desc">{item.food.description}</p>
-                                    
-                                    {item.allergens.length > 0 && (
-                                        <div className="cart-item-allergens">
-                                            <strong>Allergens:</strong> {item.allergens.join(', ')}
+                        {cartItems.map((item) => {
+                            const isDeleting = deletingIds.includes(item.id);
+                            return (
+                                <div key={item.id} className={`cart-item-card ${isDeleting ? 'cart-item-exit' : ''}`}>
+                                    <img src={item.food.image} alt={item.food.name} className="cart-item-img" />
+                                    <div className="cart-item-details">
+                                        <h3>{item.food.name}</h3>
+                                        <p className="cart-item-desc">{item.food.description}</p>
+                                        
+                                        {item.allergens.length > 0 && (
+                                            <div className="cart-item-allergens">
+                                                <strong>Allergens:</strong> {item.allergens.join(', ')}
+                                            </div>
+                                        )}
+                                        
+                                        {item.comment && (
+                                            <div className="cart-item-comment">
+                                                <strong>Notes:</strong> "{item.comment}"
+                                            </div>
+                                        )}
+ 
+                                        <div className="cart-item-controls">
+                                            <span className="cart-item-price">₱{item.food.price.toFixed(2)}</span>
+                                            <div className="qty-controls">
+                                                <button onClick={() => updateQuantity(item.id, -1)}>-</button>
+                                                <span>{item.quantity}</span>
+                                                <button onClick={() => updateQuantity(item.id, 1)}>+</button>
+                                            </div>
+                                            <button className="remove-item-btn" onClick={() => removeItem(item.id)}>
+                                                Delete
+                                            </button>
                                         </div>
-                                    )}
-                                    
-                                    {item.comment && (
-                                        <div className="cart-item-comment">
-                                            <strong>Notes:</strong> "{item.comment}"
-                                        </div>
-                                    )}
-
-                                    <div className="cart-item-controls">
-                                        <span className="cart-item-price">₱{item.food.price.toFixed(2)}</span>
-                                        <div className="qty-controls">
-                                            <button onClick={() => updateQuantity(item.id, -1)}>-</button>
-                                            <span>{item.quantity}</span>
-                                            <button onClick={() => updateQuantity(item.id, 1)}>+</button>
-                                        </div>
-                                        <button className="remove-item-btn" onClick={() => removeItem(item.id)}>
-                                            Delete
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {/* Summary Sidebar */}

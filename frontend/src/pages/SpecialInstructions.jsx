@@ -44,18 +44,35 @@ export default function SpecialInstructions() {
         if (eggs) allergens.push('Eggs');
         if (others) allergens.push('Others');
 
-        const cartItem = {
-            id: Date.now(), // Unique ID for cart item
-            food: food,
-            comment: comment,
-            allergens: allergens,
-            quantity: 1
-        };
+        const existingCart = JSON.parse(sessionStorage.getItem('cart') || '[]');
 
-        const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        existingCart.push(cartItem);
-        localStorage.setItem('cart', JSON.stringify(existingCart));
+        // Check if there is an item with the same food ID, comment, and allergens
+        const existingIndex = existingCart.findIndex(item => {
+            const sameFood = item.food.id === food.id;
+            const sameComment = (item.comment || '').trim() === (comment || '').trim();
+            
+            // Check if allergens match exactly
+            const itemAllergens = item.allergens || [];
+            const sameAllergensLength = itemAllergens.length === allergens.length;
+            const sameAllergens = sameAllergensLength && allergens.every(a => itemAllergens.includes(a));
 
+            return sameFood && sameComment && sameAllergens;
+        });
+
+        if (existingIndex > -1) {
+            existingCart[existingIndex].quantity = (existingCart[existingIndex].quantity || 1) + 1;
+        } else {
+            const cartItem = {
+                id: Date.now(), // Unique ID for cart item entry
+                food: food,
+                comment: comment,
+                allergens: allergens,
+                quantity: 1
+            };
+            existingCart.push(cartItem);
+        }
+
+        sessionStorage.setItem('cart', JSON.stringify(existingCart));
         navigate('/menu');
     }
 
