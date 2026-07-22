@@ -90,8 +90,12 @@ export default function Cart() {
             // Save latest order for the confirmation page
             localStorage.setItem('latest_order', JSON.stringify(localOrder));
 
-            // If GCash, trigger the Payments API immediately to update backend
+            // If GCash, trigger the Payments API and Order status update immediately on backend
             if (isGCash) {
+                fetch(`http://localhost:8080/orders/${savedOrder.id}/status?status=PAID`, {
+                    method: 'PUT'
+                }).catch(err => console.warn("Could not update order status to PAID on backend:", err));
+
                 const paymentPayload = {
                     orderId: savedOrder.id,
                     amount: calculateTotal(),

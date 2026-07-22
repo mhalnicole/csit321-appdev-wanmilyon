@@ -1,27 +1,29 @@
 .history-container {
-    padding: 20px;
+    padding: 16px;
     font-family: system-ui, -apple-system, sans-serif;
     color: #333;
+    box-sizing: border-box;
 }
 
 .history-header {
-    margin-bottom: 30px;
+    margin-bottom: 16px;
 }
 
 .history-header h1 {
-    font-size: 2.2rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    margin: 0 0 5px 0;
+    margin: 0 0 4px 0;
 }
 
 .history-header p {
     margin: 0;
     color: #666;
+    font-size: 0.85rem;
 }
 
 .history-empty-state {
     text-align: center;
-    padding: 60px 20px;
+    padding: 40px 20px;
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
@@ -76,15 +78,34 @@
     font-weight: 700;
 }
 
-/* Completed status badge */
+/* Status Badges */
 .history-status-badge {
-    background-color: #c2f0d5;
-    color: #198754;
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
     text-transform: uppercase;
+    display: inline-block;
+    white-space: nowrap;
+    letter-spacing: 0.03em;
+}
+
+.history-status-badge.completed {
+    background-color: #e6f4ea;
+    color: #137333;
+}
+
+.history-status-badge.pending,
+.history-status-badge.pending-payment {
+    background-color: #fef7e0;
+    color: #b06000;
+}
+
+.history-status-badge.paid,
+.history-status-badge.paid-preparing,
+.history-status-badge.paid---preparing {
+    background-color: #e8f0fe;
+    color: #1a73e8;
 }
 
 /* Action button matching mockup */

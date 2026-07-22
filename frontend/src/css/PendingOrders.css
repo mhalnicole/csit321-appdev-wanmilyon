@@ -1,27 +1,28 @@
 .pending-orders-container {
-    padding: 20px;
+    padding: 16px;
     font-family: system-ui, -apple-system, sans-serif;
     color: #333;
+    box-sizing: border-box;
 }
 
 .pending-title {
-    font-size: 2.2rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    margin-bottom: 30px;
+    margin-bottom: 16px;
 }
 
 .pending-empty-state {
     text-align: center;
-    padding: 60px 20px;
+    padding: 40px 20px;
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .pending-empty-state p {
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #666;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .pending-order-btn {
@@ -81,21 +82,32 @@
 }
 
 .pending-status-badge {
-    padding: 6px 12px;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-size: 0.75rem;
+    font-weight: 800;
     text-transform: uppercase;
+    display: inline-block;
+    white-space: nowrap;
+    letter-spacing: 0.03em;
 }
 
-.pending-status-badge.pending-payment {
-    background-color: #fef3c7;
-    color: #d97706;
+.pending-status-badge.pending-payment,
+.pending-status-badge.pending {
+    background-color: #fef7e0;
+    color: #b06000;
 }
 
-.pending-status-badge.paid-&-preparing {
-    background-color: #dcfce7;
-    color: #15803d;
+.pending-status-badge.paid,
+.pending-status-badge.paid-preparing,
+.pending-status-badge.paid---preparing {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+}
+
+.pending-status-badge.completed {
+    background-color: #e6f4ea;
+    color: #137333;
 }
 
 /* Items section */

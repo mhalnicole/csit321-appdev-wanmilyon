@@ -15,13 +15,19 @@ export default function PalitDaan() {
             display: 'flex',
             flexDirection: 'column',
             height: '100vh',
+            width: '100vw',
+            overflow: 'hidden',
             fontFamily: 'system-ui, -apple-system, sans-serif',
             backgroundColor: '#ffa07a' 
         }}>
             <Navbar toggleSidebar={toggleSidebar} />
-            <div style={{ display: 'flex', flex: 1 }}>
+            <div style={{ display: 'flex', flex: 1, height: 'calc(100vh - 54px)', overflow: 'hidden' }}>
                 {isSidebarOpen && <Sidebar />}
-                <div style={{ flex: 1 }}>
+                <div style={{ 
+                    flex: 1, 
+                    overflowY: 'auto',
+                    boxSizing: 'border-box'
+                }}>
                     <MainContent />
                 </div>
             </div>

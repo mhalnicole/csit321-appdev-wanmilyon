@@ -52,7 +52,7 @@ export default function OrderHistory() {
                                     <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
                                     <td className="history-amount-col">₱{order.price.toFixed(2)}</td>
                                     <td>
-                                        <span className={`history-status-badge ${order.status.toLowerCase()}`}>
+                                        <span className={`history-status-badge ${order.status ? order.status.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'pending'}`}>
                                             {order.status}
                                         </span>
                                     </td>

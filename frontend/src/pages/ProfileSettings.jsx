@@ -11,23 +11,91 @@ const initialProfile = {
 };
 
 export default function ProfileSettings() {
-  const [profile, setProfile] = useState(initialProfile);
+  const [profile, setProfile] = useState(() => {
+    const saved = localStorage.getItem('user_profile');
+    return saved ? JSON.parse(saved) : initialProfile;
+  });
+
+  const [savedMessage, setSavedMessage] = useState(false);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/users/1')
+      .then(res => res.json())
+      .then(user => {
+        if (user && user.fullName) {
+          setProfile(prev => {
+            const updated = {
+              ...prev,
+              name: user.fullName || prev.name,
+              email: user.email || prev.email,
+            };
+            localStorage.setItem('user_profile', JSON.stringify(updated));
+            return updated;
+          });
+        }
+      })
+      .catch(err => console.warn("Using offline user profile:", err));
+  }, []);
 
   const handleChange = (key) => (event) => {
     setProfile((prev) => ({ ...prev, [key]: event.target.value }));
   };
 
   const handleSave = () => {
-    alert('Profile settings saved successfully.');
+    // 1. Save to LocalStorage
+    localStorage.setItem('user_profile', JSON.stringify(profile));
+
+    // 2. Sync to Backend API
+    fetch('http://localhost:8080/users/1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: profile.name,
+        email: profile.email
+      })
+    })
+    .then(res => res.json())
+    .then(data => console.log("Profile successfully updated in MySQL:", data))
+    .catch(err => console.warn("Backend profile update failed (offline mode):", err));
+
+    // 3. Show saved banner notification
+    setSavedMessage(true);
+    setTimeout(() => setSavedMessage(false), 3000);
   };
 
   const handleCancel = () => {
-    setProfile(initialProfile);
+    const saved = localStorage.getItem('user_profile');
+    setProfile(saved ? JSON.parse(saved) : initialProfile);
+  };
+
+  // Helper to extract initials
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
   };
 
   return (
     <div style={pageWrapperStyle}>
       <div style={contentAreaStyle}>
+        {savedMessage && (
+          <div style={{
+            backgroundColor: '#22c55e',
+            color: 'white',
+            padding: '10px 16px',
+            borderRadius: '10px',
+            marginBottom: '12px',
+            fontWeight: '700',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: '0 4px 12px rgba(34, 197, 94, 0.2)'
+          }}>
+            ✓ Profile settings saved and synchronized successfully!
+          </div>
+        )}
         <header style={heroStyle}>
           <div>
             <p style={eyebrowStyle}>Account settings</p>
@@ -49,7 +117,7 @@ export default function ProfileSettings() {
         <div style={gridStyle}>
           <aside style={summaryCardStyle}>
             <div style={profileBadgeStyle}>
-              <span style={profileInitialStyle}>JD</span>
+              <span style={profileInitialStyle}>{getInitials(profile.name)}</span>
             </div>
             <div>
               <p style={summaryLabelStyle}>Account holder</p>
@@ -151,7 +219,7 @@ export default function ProfileSettings() {
 const pageWrapperStyle = {
     width: '100%',
     height: '100%',
-    padding: '10px',
+    padding: '12px 16px',
     boxSizing: 'border-box',
     overflow: 'hidden',
     display: 'flex',
@@ -160,7 +228,7 @@ const pageWrapperStyle = {
 
 const contentAreaStyle = {
   width: '100%',
-  maxWidth: '1280px',
+  maxWidth: '1100px',
   margin: '0 auto',
   display: 'flex',
   flexDirection: 'column',
@@ -170,42 +238,43 @@ const contentAreaStyle = {
 
 const heroStyle = {
   display: 'flex',
+  justifyAttribute: 'space-between',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  gap: '24px',
-  marginBottom: '15px',
+  gap: '16px',
+  marginBottom: '10px',
   flexWrap: 'wrap',
   flexShrink: 0
 };
 
 const eyebrowStyle = {
   margin: 0,
-  fontSize: '12px',
+  fontSize: '10px',
   fontWeight: 700,
-  letterSpacing: '0.18em',
+  letterSpacing: '0.15em',
   textTransform: 'uppercase',
   color: '#ff6a20'
 };
 
 const heroTitleStyle = {
-  margin: '6px 0 8px',
-  fontSize: '32px',
-  lineHeight: '1.05',
+  margin: '2px 0 4px',
+  fontSize: '1.4rem',
+  lineHeight: '1.1',
   fontWeight: 800,
   color: '#2b2b2b'
 };
 
 const heroCopyStyle = {
   margin: 0,
-  maxWidth: '720px',
-  fontSize: '14px',
+  maxWidth: '650px',
+  fontSize: '0.82rem',
   color: '#51423a',
-  lineHeight: '1.5'
+  lineHeight: '1.35'
 };
 
 const heroActionsStyle = {
   display: 'flex',
-  gap: '12px',
+  gap: '10px',
   flexWrap: 'wrap'
 };
 
@@ -214,11 +283,11 @@ const primaryButtonStyle = {
   color: '#ffffff',
   border: 'none',
   borderRadius: '999px',
-  padding: '12px 24px',
-  fontSize: '14px',
+  padding: '8px 18px',
+  fontSize: '0.88rem',
   fontWeight: 700,
   cursor: 'pointer',
-  boxShadow: '0 12px 30px rgba(255,106,26,0.24)',
+  boxShadow: '0 4px 12px rgba(255,106,26,0.24)',
   flexShrink: 0
 };
 
@@ -227,8 +296,8 @@ const ghostButtonStyle = {
   color: '#4a3e35',
   border: '1px solid rgba(74,62,53,0.16)',
   borderRadius: '999px',
-  padding: '12px 22px',
-  fontSize: '14px',
+  padding: '8px 16px',
+  fontSize: '0.88rem',
   fontWeight: 700,
   cursor: 'pointer',
   flexShrink: 0
@@ -236,8 +305,8 @@ const ghostButtonStyle = {
 
 const gridStyle = {
   display: 'grid',
-  gridTemplateColumns: '260px 1fr',
-  gap: '16px',
+  gridTemplateColumns: '220px 1fr',
+  gap: '12px',
   flex: 1,
   minHeight: 0,
   overflow: 'hidden'
@@ -245,31 +314,31 @@ const gridStyle = {
 
 const summaryCardStyle = {
   background: '#ffffff',
-  borderRadius: '28px',
-  padding: '24px',
-  boxShadow: '0 22px 55px rgba(16, 24, 40, 0.08)',
+  borderRadius: '16px',
+  padding: '14px',
+  boxShadow: '0 6px 20px rgba(16, 24, 40, 0.05)',
   display: 'flex',
   flexDirection: 'column',
-  gap: '20px',
+  gap: '12px',
   overflowY: 'auto',
   minHeight: 0,
   height: '100%'
 };
 
 const profileBadgeStyle = {
-  width: '80px',
-  height: '80px',
+  width: '54px',
+  height: '54px',
   borderRadius: '50%',
   background: 'linear-gradient(135deg, #ff6a1a 0%, #ffb86c 100%)',
   display: 'grid',
   placeItems: 'center',
-  boxShadow: '0 16px 30px rgba(255,106,26,0.2)',
+  boxShadow: '0 8px 18px rgba(255,106,26,0.2)',
   flexShrink: 0
 };
 
 const profileInitialStyle = {
   color: '#ffffff',
-  fontSize: '28px',
+  fontSize: '20px',
   fontWeight: 800
 };
 
@@ -277,14 +346,14 @@ const summaryLabelStyle = {
   margin: '0 0 2px',
   color: '#8f7562',
   textTransform: 'uppercase',
-  letterSpacing: '0.15em',
-  fontSize: '10px',
+  letterSpacing: '0.12em',
+  fontSize: '9px',
   fontWeight: 700
 };
 
 const summaryTitleStyle = {
-  margin: '0 0 4px',
-  fontSize: '22px',
+  margin: '0 0 2px',
+  fontSize: '15px',
   fontWeight: 800,
   color: '#1f1d1b'
 };
@@ -292,63 +361,63 @@ const summaryTitleStyle = {
 const summaryDetailStyle = {
   margin: 0,
   color: '#6a5c50',
-  fontSize: '13px',
-  lineHeight: '1.5'
+  fontSize: '11px',
+  lineHeight: '1.3'
 };
 
 const summaryBlocksStyle = {
   display: 'grid',
-  gap: '12px'
+  gap: '8px'
 };
 
 const summaryBlockStyle = {
   background: '#f8f1ec',
-  borderRadius: '22px',
-  padding: '14px 16px'
+  borderRadius: '12px',
+  padding: '8px 10px'
 };
 
 const summaryBlockTitle = {
   display: 'block',
-  marginBottom: '4px',
+  marginBottom: '2px',
   color: '#7e675a',
-  fontSize: '11px',
+  fontSize: '9px',
   fontWeight: 700,
   textTransform: 'uppercase',
-  letterSpacing: '0.14em'
+  letterSpacing: '0.12em'
 };
 
 const summaryBlockValue = {
   color: '#2b2420',
-  fontSize: '16px',
+  fontSize: '13px',
   fontWeight: 700
 };
 
 const infoListStyle = {
   display: 'grid',
-  gap: '12px'
+  gap: '8px'
 };
 
 const infoLabelStyle = {
   margin: 0,
   color: '#8f7562',
-  fontSize: '11px',
+  fontSize: '9px',
   fontWeight: 700,
   textTransform: 'uppercase',
-  letterSpacing: '0.14em'
+  letterSpacing: '0.12em'
 };
 
 const infoTextStyle = {
-  margin: '4px 0 0',
+  margin: '2px 0 0',
   color: '#4d4238',
-  fontSize: '13px',
-  lineHeight: '1.5'
+  fontSize: '11px',
+  lineHeight: '1.3'
 };
 
 const formCardStyle = {
   background: '#ffffff',
-  borderRadius: '28px',
-  padding: '18px',
-  boxShadow: '0 22px 55px rgba(16, 24, 40, 0.08)',
+  borderRadius: '16px',
+  padding: '14px 18px',
+  boxShadow: '0 6px 20px rgba(16, 24, 40, 0.05)',
   display: 'flex',
   flexDirection: 'column',
   overflowY: 'auto',
@@ -358,77 +427,77 @@ const formCardStyle = {
 
 const sectionStyle = {
   display: 'grid',
-  gap: '12px'
+  gap: '8px'
 };
 
 const sectionHeaderStyle = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  gap: '16px'
+  gap: '12px'
 };
 
 const sectionTitleStyle = {
   margin: 0,
-  fontSize: '20px',
+  fontSize: '1.05rem',
   fontWeight: 800,
   color: '#2b2b2b'
 };
 
 const sectionSubtitleStyle = {
-  margin: '6px 0 0',
-  fontSize: '13px',
+  margin: '2px 0 0',
+  fontSize: '11px',
   color: '#6a5c50',
-  lineHeight: '1.5'
+  lineHeight: '1.3'
 };
 
 const fieldGridStyle = {
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  gap: '12px'
+  gap: '8px'
 };
 
 const fieldWrapperStyle = {
   display: 'flex',
   flexDirection: 'column',
-  gap: '8px'
+  gap: '4px'
 };
 
 const fieldWrapperStyleFull = {
   gridColumn: '1 / -1',
   display: 'flex',
   flexDirection: 'column',
-  gap: '8px'
+  gap: '4px'
 };
 
 const fieldLabelStyle = {
   margin: 0,
   color: '#4a4037',
-  fontSize: '12px',
+  fontSize: '11px',
   fontWeight: 700
 };
 
 const inputStyle = {
   width: '100%',
-  padding: '12px 14px',
-  borderRadius: '18px',
+  padding: '8px 10px',
+  borderRadius: '10px',
   border: '1px solid #e6d4c5',
   background: '#fcfaf7',
   color: '#3f332d',
-  fontSize: '14px',
+  fontSize: '12px',
   outline: 'none',
   boxSizing: 'border-box'
 };
 
 const textareaStyle = {
   width: '100%',
-  height: '60px',
-  padding: '14px 16px',
-  borderRadius: '18px',
+  height: '45px',
+  padding: '8px 10px',
+  borderRadius: '10px',
   border: '1px solid #e6d4c5',
   background: '#fcfaf7',
   color: '#3f332d',
-  fontSize: '15px',
+  fontSize: '12px',
   outline: 'none',
   boxSizing: 'border-box',
   resize: 'none'

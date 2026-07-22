@@ -7,18 +7,67 @@ export default function PendingOrders() {
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        const pending = JSON.parse(localStorage.getItem('pending_orders') || '[]');
-        setOrders(pending);
+        fetch('http://localhost:8080/orders/user/1')
+            .then(res => res.json())
+            .then(data => {
+                const activeBackendOrders = data
+                    .filter(o => o.status !== 'COMPLETED' && o.status !== 'Completed')
+                    .map(o => ({
+                        id: '#' + o.id,
+                        backendId: o.id,
+                        date: o.createdAt ? new Date(o.createdAt).toLocaleString() : new Date().toLocaleString(),
+                        items: [{ food: { name: o.itemName, price: o.price }, quantity: 1, allergens: [] }],
+                        total: o.price,
+                        paymentMethod: 'Cash at Counter',
+                        status: o.status === 'PENDING' ? 'Pending Payment' : o.status
+                    }));
+
+                // Get local storage pending orders and sync with backend
+                const localPending = JSON.parse(localStorage.getItem('pending_orders') || '[]')
+                    .filter(o => o.status !== 'COMPLETED' && o.status !== 'Completed');
+
+                const cleanedLocal = [];
+                localPending.forEach(local => {
+                    const matchInBackend = data.find(b => b.id === local.backendId || '#' + b.id === local.id);
+                    if (matchInBackend && (matchInBackend.status === 'COMPLETED' || matchInBackend.status === 'Completed')) {
+                        return; // Skip completed backend order
+                    }
+                    cleanedLocal.push(local);
+                });
+
+                // Update clean local storage
+                localStorage.setItem('pending_orders', JSON.stringify(cleanedLocal));
+
+                const combined = [...activeBackendOrders];
+                cleanedLocal.forEach(local => {
+                    if (!combined.some(b => b.backendId === local.backendId || b.id === local.id)) {
+                        combined.push(local);
+                    }
+                });
+
+                setOrders(combined);
+            })
+            .catch(err => {
+                const pending = JSON.parse(localStorage.getItem('pending_orders') || '[]')
+                    .filter(o => o.status !== 'COMPLETED' && o.status !== 'Completed');
+                setOrders(pending);
+            });
     }, []);
 
     const simulatePayment = (orderId) => {
-        const pending = JSON.parse(localStorage.getItem('pending_orders') || '[]');
-        const targetOrder = pending.find(order => order.id === orderId);
+        const targetOrder = orders.find(order => order.id === orderId);
 
         if (targetOrder) {
+            const rawId = targetOrder.backendId || parseInt(targetOrder.id.replace('#', ''), 10);
+            
+            // Update backend order status to PAID
+            fetch(`http://localhost:8080/orders/${rawId}/status?status=PAID`, {
+                method: 'PUT'
+            }).catch(err => console.warn("Backend order status update failed:", err));
+
             // Trigger backend Payment API
             const paymentPayload = {
-                orderId: targetOrder.backendId || 1,
+                orderId: rawId,
                 amount: targetOrder.total,
                 paymentMethod: 'OTC_CASH'
             };
@@ -27,54 +76,46 @@ export default function PendingOrders() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(paymentPayload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log("Payment successfully logged in MySQL database:", data);
-            })
-            .catch(err => {
-                console.warn("Payment API connection failed (offline mode):", err);
-            });
+            }).catch(err => console.warn("Payment API failed:", err));
 
-            // Update local status to Paid & Preparing
-            targetOrder.status = 'Paid & Preparing';
+            // Update state
+            const updatedOrders = orders.map(o => 
+                o.id === orderId ? { ...o, status: 'Paid & Preparing' } : o
+            );
+            setOrders(updatedOrders);
 
-            // Save updated pending list
-            const updatedPending = pending.map(order => order.id === orderId ? targetOrder : order);
-            setOrders(updatedPending);
-            localStorage.setItem('pending_orders', JSON.stringify(updatedPending));
+            // Update local storage
+            const pending = JSON.parse(localStorage.getItem('pending_orders') || '[]');
+            const updatedLocal = pending.map(o => (o.id === orderId || o.backendId === rawId) ? { ...o, status: 'Paid & Preparing' } : o);
+            localStorage.setItem('pending_orders', JSON.stringify(updatedLocal));
         }
     };
 
     const completeOrder = (orderId) => {
-        const pending = JSON.parse(localStorage.getItem('pending_orders') || '[]');
-        const targetOrder = pending.find(order => order.id === orderId);
+        const targetOrder = orders.find(order => order.id === orderId);
 
         if (targetOrder) {
-            // Trigger backend Order Status update
-            if (targetOrder.backendId) {
-                fetch(`http://localhost:8080/orders/${targetOrder.backendId}/status?status=COMPLETED`, {
-                    method: 'PUT'
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log("Order status updated to COMPLETED in MySQL database:", data);
-                })
-                .catch(err => {
-                    console.warn("Could not sync complete status with backend database:", err);
-                });
-            }
+            const rawId = targetOrder.backendId || parseInt(targetOrder.id.replace('#', ''), 10);
 
-            // Move to order_history
+            // Trigger backend Order Status update to COMPLETED
+            fetch(`http://localhost:8080/orders/${rawId}/status?status=COMPLETED`, {
+                method: 'PUT'
+            }).catch(err => console.warn("Backend complete status update failed:", err));
+
+            // Move to order_history in local storage
             const history = JSON.parse(localStorage.getItem('order_history') || '[]');
-            const historyOrder = { ...targetOrder, status: 'Completed', completedDate: new Date().toLocaleDateString() };
+            const historyOrder = { ...targetOrder, status: 'COMPLETED', completedDate: new Date().toLocaleDateString() };
             history.unshift(historyOrder);
             localStorage.setItem('order_history', JSON.stringify(history));
 
-            // Remove from active pending orders
-            const updatedPending = pending.filter(order => order.id !== orderId);
-            setOrders(updatedPending);
-            localStorage.setItem('pending_orders', JSON.stringify(updatedPending));
+            // Remove from active pending orders state
+            const updatedOrders = orders.filter(o => o.id !== orderId);
+            setOrders(updatedOrders);
+
+            // Remove from local storage
+            const pending = JSON.parse(localStorage.getItem('pending_orders') || '[]');
+            const updatedLocal = pending.filter(o => o.id !== orderId && o.backendId !== rawId && o.backendId !== targetOrder.backendId);
+            localStorage.setItem('pending_orders', JSON.stringify(updatedLocal));
         }
     };
 
@@ -98,7 +139,7 @@ export default function PendingOrders() {
                                     <span className="pending-order-id">{order.id}</span>
                                     <span className="pending-order-date">{order.date}</span>
                                 </div>
-                                <span className={`pending-status-badge ${order.status.toLowerCase().replace(/\s+/g, '-')}`}>
+                                <span className={`pending-status-badge ${order.status ? order.status.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'pending'}`}>
                                     {order.status}
                                 </span>
                             </div>
@@ -137,13 +178,13 @@ export default function PendingOrders() {
                                     <span className="pending-total-amount">₱{order.total.toFixed(2)}</span>
                                 </div>
                                 
-                                {order.status === 'Pending Payment' && (
+                                {(!order.status || order.status.toLowerCase().includes('pending')) && (
                                     <button className="pending-pay-btn" onClick={() => simulatePayment(order.id)}>
                                         Pay at Counter
                                     </button>
                                 )}
 
-                                {order.status === 'Paid & Preparing' && (
+                                {(order.status && (order.status.toLowerCase().includes('paid') || order.status.toLowerCase().includes('preparing'))) && (
                                     <button className="pending-pay-btn complete-btn" onClick={() => completeOrder(order.id)}>
                                         Claim Food
                                     </button>
