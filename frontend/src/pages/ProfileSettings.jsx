@@ -11,11 +11,13 @@ const initialProfile = {
 };
 
 export default function ProfileSettings() {
-  const [profile, setProfile] = useState(() => {
+  const getInitialState = () => {
     const saved = localStorage.getItem('user_profile');
     return saved ? JSON.parse(saved) : initialProfile;
-  });
+  };
 
+  const [profile, setProfile] = useState(getInitialState);
+  const [savedProfile, setSavedProfile] = useState(getInitialState);
   const [savedMessage, setSavedMessage] = useState(false);
 
   useEffect(() => {
@@ -23,26 +25,30 @@ export default function ProfileSettings() {
       .then(res => res.json())
       .then(user => {
         if (user && user.fullName) {
-          setProfile(prev => {
-            const updated = {
-              ...prev,
-              name: user.fullName || prev.name,
-              email: user.email || prev.email,
-            };
-            localStorage.setItem('user_profile', JSON.stringify(updated));
-            return updated;
-          });
+          const updated = {
+            ...savedProfile,
+            name: user.fullName || savedProfile.name,
+            email: user.email || savedProfile.email,
+          };
+          setSavedProfile(updated);
+          setProfile(updated);
+          localStorage.setItem('user_profile', JSON.stringify(updated));
         }
       })
       .catch(err => console.warn("Using offline user profile:", err));
   }, []);
+
+  // Detect whether form has unsaved modifications
+  const hasChanges = JSON.stringify(profile) !== JSON.stringify(savedProfile);
 
   const handleChange = (key) => (event) => {
     setProfile((prev) => ({ ...prev, [key]: event.target.value }));
   };
 
   const handleSave = () => {
-    // 1. Save to LocalStorage
+    if (!hasChanges) return;
+    // 1. Commit as saved profile
+    setSavedProfile(profile);
     localStorage.setItem('user_profile', JSON.stringify(profile));
 
     // 2. Sync to Backend API
@@ -64,8 +70,9 @@ export default function ProfileSettings() {
   };
 
   const handleCancel = () => {
-    const saved = localStorage.getItem('user_profile');
-    setProfile(saved ? JSON.parse(saved) : initialProfile);
+    if (!hasChanges) return;
+    // Revert unsaved typed edits back to last saved profile
+    setProfile(savedProfile);
   };
 
   // Helper to extract initials
@@ -105,10 +112,28 @@ export default function ProfileSettings() {
             </p>
           </div>
           <div style={heroActionsStyle}>
-            <button type="button" onClick={handleCancel} style={ghostButtonStyle}>
-              Reset
+            <button 
+              type="button" 
+              onClick={handleCancel} 
+              disabled={!hasChanges}
+              style={{
+                ...ghostButtonStyle,
+                opacity: hasChanges ? 1 : 0.4,
+                cursor: hasChanges ? 'pointer' : 'not-allowed'
+              }}
+            >
+              Discard Changes
             </button>
-            <button type="button" onClick={handleSave} style={primaryButtonStyle}>
+            <button 
+              type="button" 
+              onClick={handleSave} 
+              disabled={!hasChanges}
+              style={{
+                ...primaryButtonStyle,
+                opacity: hasChanges ? 1 : 0.4,
+                cursor: hasChanges ? 'pointer' : 'not-allowed'
+              }}
+            >
               Save Changes
             </button>
           </div>

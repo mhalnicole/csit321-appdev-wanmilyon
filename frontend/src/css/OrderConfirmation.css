@@ -98,9 +98,75 @@
 }
 
 .info-box strong {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: #222;
     font-weight: 700;
+}
+
+/* ===========================
+   STATUS TRACKER BAR
+=========================== */
+
+.status-tracker-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0 6px 0;
+    padding: 8px 12px;
+    background: #fff8f3;
+    border-radius: 10px;
+    border: 1px solid #ffe8d6;
+}
+
+.tracker-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+}
+
+.tracker-step.active {
+    opacity: 1;
+}
+
+.step-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ccc;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tracker-step.active .step-circle {
+    background: #f5821f;
+    box-shadow: 0 2px 8px rgba(245, 130, 31, 0.4);
+}
+
+.step-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #444;
+}
+
+.tracker-line {
+    flex: 1;
+    height: 3px;
+    background: #e0e0e0;
+    margin: 0 4px;
+    margin-bottom: 12px;
+    border-radius: 2px;
+    transition: background 0.3s ease;
+}
+
+.tracker-line.active {
+    background: #f5821f;
 }
 
 .status-badge-sm {
