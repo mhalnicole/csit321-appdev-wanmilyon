@@ -142,8 +142,15 @@ export default function PendingOrders() {
                                     <span className="pending-order-id">{order.id}</span>
                                     <span className="pending-order-date">{order.date}</span>
                                 </div>
-                                <span className={`pending-status-badge ${order.status ? order.status.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'pending'}`}>
-                                    {order.status}
+                                <span className={`pending-status-badge ${
+                                    (order.status || '').toLowerCase().includes('ready') ? 'ready' :
+                                    (order.status || '').toLowerCase().includes('cancel') ? 'cancelled' :
+                                    (order.status || '').toLowerCase().includes('preparing') ? 'preparing' : 'pending'
+                                }`}>
+                                    {(order.status || '').includes('READY') ? '🔔 Ready for Claiming!' :
+                                     (order.status || '').includes('CANCEL') ? `❌ ${order.status}` :
+                                     (order.status || '').includes('PREPARING') ? '🍳 Preparing Order' :
+                                     order.status}
                                 </span>
                             </div>
 
@@ -153,7 +160,7 @@ export default function PendingOrders() {
                                         <div className="pending-item-left">
                                             <span className="pending-item-qty">{item.quantity}x</span>
                                             <span className="pending-item-name">{item.food.name}</span>
-                                            {item.allergens.length > 0 && (
+                                            {item.allergens && item.allergens.length > 0 && (
                                                 <span className="pending-item-allergens">({item.allergens.join(', ')})</span>
                                             )}
                                         </div>
@@ -187,10 +194,22 @@ export default function PendingOrders() {
                                     </button>
                                 )}
 
-                                {(order.status && (order.status.toLowerCase().includes('paid') || order.status.toLowerCase().includes('preparing'))) && (
+                                {(order.status && order.status.toLowerCase().includes('preparing')) && (
+                                    <span style={{ fontSize: '13px', color: '#1565c0', fontWeight: 'bold' }}>
+                                        🍳 Kitchen is preparing your food...
+                                    </span>
+                                )}
+
+                                {(order.status && (order.status.toLowerCase().includes('ready') || order.status.toLowerCase().includes('paid'))) && (
                                     <button className="pending-pay-btn complete-btn" onClick={() => completeOrder(order.id)}>
-                                        Claim Food
+                                        Claim Food at Counter 🔔
                                     </button>
+                                )}
+
+                                {(order.status && order.status.toLowerCase().includes('cancel')) && (
+                                    <span style={{ fontSize: '13px', color: '#c62828', fontWeight: 'bold' }}>
+                                        Order Cancelled (Out of Stock / Unavailable)
+                                    </span>
                                 )}
                             </div>
                         </div>

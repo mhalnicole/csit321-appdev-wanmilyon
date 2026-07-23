@@ -24,6 +24,16 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.placeOrder(order));
     }
 
+    @GetMapping
+    public List<Order> getAllOrders() {
+        return service.getAllOrders();
+    }
+
+    @GetMapping("/all")
+    public List<Order> getAllOrdersAlias() {
+        return service.getAllOrders();
+    }
+
     @GetMapping("/user/{userId}")
     public List<Order> getOrdersForUser(@PathVariable Long userId) {
         return service.getOrdersForUser(userId);

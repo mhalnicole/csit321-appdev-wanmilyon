@@ -35,7 +35,26 @@ export default function Login() {
         }
 
         setTimeout(() => {
-            navigate('/menu');
+            if (result.user && (result.user.role === 'ADMIN' || result.user.role === 'STAFF')) {
+                navigate('/canteen-dashboard');
+            } else {
+                navigate('/menu');
+            }
+        }, 1100);
+    }
+
+    async function handleDemoStaffLogin() {
+        setForm({ idNumber: 'ADMIN001', password: 'admin123' });
+        setError('');
+        setIsLoggingIn(true);
+        const result = await loginUser({ idNumber: 'ADMIN001', password: 'admin123' });
+        if (!result.success) {
+            setError(result.message);
+            setIsLoggingIn(false);
+            return;
+        }
+        setTimeout(() => {
+            navigate('/canteen-dashboard');
         }, 1100);
     }
 
@@ -108,9 +127,28 @@ export default function Login() {
                                 </p>
                             )}
 
-                            <div style={styles.buttonRow}>
+                            <div style={{ ...styles.buttonRow, flexDirection: 'column', gap: '8px' }}>
                                 <button type="submit" className="nav-link-animate" style={styles.submitButton} aria-label="Log in">
                                     Log In
+                                </button>
+                                <button 
+                                    type="button" 
+                                    onClick={handleDemoStaffLogin}
+                                    style={{
+                                        backgroundColor: '#2d2d2d',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        width: '100%',
+                                        padding: '10px',
+                                        borderRadius: '12px',
+                                        fontWeight: '700',
+                                        fontSize: '13px',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+                                        transition: 'all 0.15s ease'
+                                    }}
+                                >
+                                    🍳 Log In as Canteen Staff (Admin)
                                 </button>
                             </div>
                         </form>

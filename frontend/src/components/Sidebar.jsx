@@ -1,7 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
+import { getCurrentUser } from '../utils/auth';
  
 export default function Sidebar({ isOpen, onLogout }) {
     const location = useLocation();
+    const currentUser = getCurrentUser();
+    const isAdminOrStaff = currentUser && (currentUser.role === 'ADMIN' || currentUser.role === 'STAFF');
  
     const menuItems = [
         { label: 'Dashboard', path: '/dashboard' },
@@ -9,6 +12,10 @@ export default function Sidebar({ isOpen, onLogout }) {
         { label: 'Order History', path: '/orderhistory' },
         { label: 'Profile Settings', path: '/profilesettings' }
     ];
+
+    if (isAdminOrStaff) {
+        menuItems.unshift({ label: '🍳 Kitchen Portal', path: '/canteen-dashboard', isStaff: true });
+    }
  
     return (
         <div style={{

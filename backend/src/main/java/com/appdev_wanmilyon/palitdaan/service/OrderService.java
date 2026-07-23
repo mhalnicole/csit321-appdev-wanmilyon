@@ -24,6 +24,10 @@ public class OrderService {
         return repository.findByUserId(userId);
     }
 
+    public List<Order> getAllOrders() {
+        return repository.findAllByOrderByCreatedAtDesc();
+    }
+
     public Order updateOrderStatus(Long orderId, String status) {
         Order order = repository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with ID " + orderId));

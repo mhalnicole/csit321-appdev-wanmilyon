@@ -7,6 +7,7 @@ import Cart from '../pages/Cart';
 import PendingOrders from '../pages/PendingOrders';
 import OrderHistory from '../pages/OrderHistory';
 import OrderConfirmation from '../pages/OrderConfirmation';
+import CanteenPersonnel from '../pages/CanteenPersonnel';
 
 export default function MainContent() {
     const location = useLocation();
@@ -24,6 +25,7 @@ export default function MainContent() {
                 }}
             >
             <Routes> {/* <Route path='/' element={<Navigate to='/dashboard' replace />} /> */}
+                <Route path='/canteen-dashboard' element={<CanteenPersonnel />} />
                 <Route path='/orders' element={<OrderHistory />} />
                 <Route path="/confirmation" element={<OrderConfirmation />} />
                 <Route path='/special-instructions' element={<SpecialInstructions />} />
